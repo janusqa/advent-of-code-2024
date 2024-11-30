@@ -1,0 +1,16 @@
+{
+    "name": "janusqa/adventofcode",
+    "description": "Advent of Code 2024",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Janusqa\\Adventofcode\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "JanusQA"
+        }
+    ],
+    "require": {}
+}

@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.php": "php"
+    },
+
+    "terminal.integrated.fontFamily": "'JetBrains Mono'",
+    "terminal.integrated.gpuAcceleration": "off"
+}
