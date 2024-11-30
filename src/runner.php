@@ -1,7 +1,7 @@
 <?php
 // run.php
 
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Get day and part from command line arguments
 $day = isset($argv[1]) ? str_pad((int)$argv[1], 2, '0', STR_PAD_LEFT) : null;
