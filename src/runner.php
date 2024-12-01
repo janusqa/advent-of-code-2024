@@ -21,7 +21,7 @@ if (!class_exists($dayClass)) {
 }
 
 // Build the file path for the solution and input file
-$inputFile = __DIR__ . "/day{$day}/input.txt";
+$inputFile = __DIR__ . "/Day{$day}/input.txt";
 if (!file_exists($inputFile)) {
     echo "Input file for Day {$day} not found.\n";
     exit(1);
