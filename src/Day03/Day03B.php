@@ -24,7 +24,7 @@ class Day03B
                 }
 
                 if (!$disabled &&  preg_match($pattern_instruction, $match, $instruction)) {
-                    $result += $instruction[1] * $instruction[2];
+                    $result += (int)$instruction[1] * (int)$instruction[2];
                 }
             }
         }
