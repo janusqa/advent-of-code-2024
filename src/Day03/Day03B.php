@@ -17,14 +17,12 @@ class Day03B
             foreach ($matches[0] as $match) {
                 if ($match === "don't()") {
                     $disabled = true;
-                    continue;
                 } elseif ($match === "do()") {
                     $disabled = false;
-                    continue;
-                }
-
-                if (!$disabled &&  preg_match($pattern_instruction, $match, $instruction)) {
-                    $result += (int)$instruction[1] * (int)$instruction[2];
+                } else {
+                    if (!$disabled && preg_match($pattern_instruction, $match, $instruction)) {
+                        $result += (int)$instruction[1] * (int)$instruction[2];
+                    }
                 }
             }
         }
