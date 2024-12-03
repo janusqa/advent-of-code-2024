@@ -13,7 +13,7 @@ class Day03A
 
         if (preg_match_all($pattern, $input, $matches)) {
             foreach ($matches[1] as $index => $match) {
-                $result += intval($match) * intval($matches[2][$index]);
+                $result += (int)$match * (int)$matches[2][$index];
             }
         }
 
