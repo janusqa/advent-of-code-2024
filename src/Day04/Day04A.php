@@ -34,21 +34,22 @@ class Day04A
 
         foreach ($grid as $row_index => $row) {
             foreach ($row as $col_index => $col) {
-                foreach ($directions as $direction) {
-                    $search = [];
-                    $search[] = $col;
-                    $row_temp = $row_index;
-                    $col_temp = $col_index;
-                    for ($i = 0; $i < 3; $i++) {
-                        $row_temp += $direction[0];
-                        $col_temp += $direction[1];
-                        if ($this->OutOfBounds($row_temp, $col_temp, $RUBound, $CUBound)) {
-                            break;
+                if ($col === 'X') {
+                    foreach ($directions as $direction) {
+                        $search = [];
+                        $search[] = $col;
+                        $row_temp = $row_index;
+                        $col_temp = $col_index;
+                        if (!$this->OutOfBounds($row_temp + (3 * $direction[0]), $col_temp + (3 * $direction[1]), $RUBound, $CUBound)) {
+                            for ($i = 0; $i < 3; $i++) {
+                                $row_temp += $direction[0];
+                                $col_temp += $direction[1];
+                                $search[] = $grid[$row_temp][$col_temp];
+                            }
+                            if ($word === implode('', $search)) {
+                                $word_count++;
+                            }
                         }
-                        $search[] = $grid[$row_temp][$col_temp];
-                    }
-                    if ($word === implode('', $search)) {
-                        $word_count++;
                     }
                 }
             }
