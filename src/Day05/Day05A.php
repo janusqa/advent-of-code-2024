@@ -9,18 +9,18 @@ class Day05A
     {
         $lines = explode("\n", trim($input));
 
-        $pattern_ordering = '/(?:\d+\|\d+)/';
+        $pattern_rules = '/(?:\d+\|\d+)/';
         $pattern_updates = '/\d+(?:,\d+)+/';
 
-        $ordering = [];
+        $rules = [];
         $updates = [];
 
         $middle_number_sum = 0;
 
         foreach ($lines as $line) {
-            if (preg_match($pattern_ordering, $line, $matches)) {
-                $order_list = explode("|", $matches[0]);
-                $ordering[$order_list[0]][] = $order_list[1];
+            if (preg_match($pattern_rules, $line, $matches)) {
+                $rule_parts = explode("|", $matches[0]);
+                $rules[$rule_parts[0]][] = $rule_parts[1];
             } elseif (preg_match($pattern_updates, $line, $matches)) {
                 $updates[] = explode(",", $matches[0]);
             }
@@ -30,13 +30,13 @@ class Day05A
             $correctly_ordered = true;
             $skipped_pages = [];
             foreach ($update as $index => $page) {
-                if (array_key_exists($page, $ordering)) {
-                    if (!empty(array_diff(array_slice($update, $index + 1), $ordering[$page]))) {
+                if (array_key_exists($page, $rules)) {
+                    if (!empty(array_diff(array_slice($update, $index + 1), $rules[$page]))) {
                         $correctly_ordered = false;
                         break;
                     }
 
-                    if (count($skipped_pages) > 0 && empty(array_diff($skipped_pages, $ordering[$page]))) {
+                    if (count($skipped_pages) > 0 && empty(array_diff($skipped_pages, $rules[$page]))) {
                         $correctly_ordered = false;
                         break;
                     }
