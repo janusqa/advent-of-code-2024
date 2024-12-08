@@ -4,6 +4,7 @@ namespace Janusqa\Adventofcode\Day07;
 
 class Day07B
 {
+
     public function run(string $input): void
     {
         $lines = explode("\n", trim($input));
@@ -11,43 +12,68 @@ class Day07B
         $total_calibration = 0;
 
         foreach ($lines as $line) {
-            [$value, $numbers] = explode(": ", $line);
-            $target = (int)$value;
-            $numbers = array_map('intval', explode(" ", $numbers));
+            [$total, $operands] = explode(": ", $line);
+            $total = (int)$total;
+            $operands = array_map(fn($n) => (int)$n, explode(" ", $operands));
 
-            // Check if the target can be reached using the numbers
-            if ($this->isValidEquation($numbers, $target)) {
-                $total_calibration += $target;
+            $size = count($operands) - 1;
+
+            foreach ($this->getOperatorSequence(['*', '+', '||'], $size, []) as $operators) {
+                $running_total = 0;
+                $a = 0;
+                $b = 1;
+
+                foreach ($operators as $index => $operator) {
+                    $running_total = $this->operation($operator, $index > 0 ? $running_total : $operands[$a], $operands[$b]);
+                    if ($running_total > $total) {
+                        break;
+                    }
+                    $b++;
+                }
+
+                if ($running_total === $total) {
+                    $total_calibration += $total;
+                    break;
+                }
             }
         }
 
         echo $total_calibration . PHP_EOL;
     }
 
-    private function isValidEquation(array $numbers, int $target): bool
+    private function getOperatorSequence(array $set, int $size, array $current): \Generator
     {
-        // Start exploring from the first number
-        return $this->dfs($numbers, 1, $numbers[0], $target);
+        if ($size === 0) {
+            // Base case: yield the current sequence as an array
+            yield $current;
+            return;
+        }
+
+        // Append each element and recurse
+        foreach ($set as $element) {
+            yield from $this->getOperatorSequence($set, $size - 1, array_merge($current, [$element]));
+        }
     }
 
-    private function dfs(array $numbers, int $index, int $currentTotal, int $target): bool
+    private function operation(string $operator, int $a, int $b): int|null
     {
-        // Base case: If we've used all numbers, check if the total matches the target
-        if ($index === count($numbers)) {
-            return $currentTotal === $target;
-        }
+        switch ($operator) {
+            case '+':
+                return $a + $b;
+                break;
 
-        // Add the current number and proceed
-        if ($this->dfs($numbers, $index + 1, $currentTotal + $numbers[$index], $target)) {
-            return true;
-        }
+            case '*':
+                return $a * $b;
+                break;
 
-        // Multiply the current number and proceed
-        if ($this->dfs($numbers, $index + 1, $currentTotal * $numbers[$index], $target)) {
-            return true;
-        }
+            case '||':
+                $b_digits = $b > 0 ? floor(log10($b)) + 1 : 1;
+                return $a * (10 ** $b_digits) + $b;
+                break;
 
-        // If no valid path found, return false
-        return false;
+            default:
+                return null;
+                break;
+        }
     }
 }
