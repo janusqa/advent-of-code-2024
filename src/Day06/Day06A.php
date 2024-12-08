@@ -24,7 +24,7 @@ class Day06A
                     $guard_position = [
                         'row' => $row,
                         'col' => $col,
-                        'guard_index' => $guard_index
+                        'guard_index' => (int)$guard_index
                     ];
                 }
             }
@@ -40,11 +40,9 @@ class Day06A
             $new_c = $guard_position['col'] + $directions[$guard[$guard_position['guard_index']]][1];
 
             if ($this->OutOfBounds($new_r, $new_c, $RUBound, $CUBound)) {
-                $grid['row']['col'] = $free_space;
+                $grid[$guard_position['row']][$guard_position['col']] = $free_space;
                 break;
-            }
-
-            if ($grid[$new_r][$new_c] === $free_space) {
+            } elseif ($grid[$new_r][$new_c] === $free_space) {
                 $grid[$guard_position['row']][$guard_position['col']] = $free_space;
                 $guard_position['row'] = $new_r;
                 $guard_position['col'] = $new_c;
@@ -55,7 +53,7 @@ class Day06A
             }
         }
 
-        echo (count(array_unique(array_map(fn($position) => $position[0] . ',' . $position[1], $path_traveled))) . PHP_EOL);
+        echo (count(array_values(array_unique(array_map(fn($position) => $position[0] . ',' . $position[1], $path_traveled)))) . PHP_EOL);
     }
 
     private function OutOfBounds(int $row, int $col, int $URBound, int $CUBound): bool
