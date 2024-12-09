@@ -2,7 +2,7 @@
 
 namespace Janusqa\Adventofcode\Day08;
 
-class Day08A
+class Day08B
 {
 
     public function run(string $input): void
