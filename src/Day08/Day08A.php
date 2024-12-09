@@ -26,7 +26,7 @@ class Day08A
 
         $antinodes = [];
 
-        foreach ($antenne as $label => $group) {
+        foreach ($antenne as $group) {
             foreach ($this->dfs($group, 2, 0, []) as $pair) {
                 $antinodes = array_merge($antinodes, $this->getAntinodes($pair, $RUBound, $CUBound));
             }

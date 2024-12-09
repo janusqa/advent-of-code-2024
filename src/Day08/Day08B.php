@@ -26,7 +26,7 @@ class Day08B
 
         $antinodes = [];
 
-        foreach ($antenne as $label => $group) {
+        foreach ($antenne as $group) {
             foreach ($this->dfs($group, 2, 0, []) as $pair) {
                 $antinodes = array_merge($antinodes, $this->getAntinodes($pair, $RUBound, $CUBound));
             }
@@ -43,15 +43,27 @@ class Day08B
         $a = explode(",", $pair[0]);
         $b = explode(",", $pair[1]);
 
-        $ai = [($a[0] - $b[0]) + $a[0], ($a[1] - $b[1]) + $a[1]];
-        $bi = [($b[0] - $a[0]) + $b[0], ($b[1] - $a[1]) + $b[1]];
+        $dar = $a[0] - $b[0];
+        $dac = $a[1] - $b[1];
+        $dbr = $b[0] - $a[0];
+        $dbc = $b[1] - $a[1];
 
-        if (!$this->OutOfBounds($ai[0], $ai[1], $RUBound, $CUBound)) {
-            $antinodes[] = implode(",", $ai);
+        $node = $a;
+        $harmonic = 1;
+
+        while (!$this->OutOfBounds($node[0], $node[1], $RUBound, $CUBound)) {
+            $antinodes[] = implode(",", $node);
+            $node = [($dar * $harmonic) + $a[0], ($dac * $harmonic) + $a[1]];
+            $harmonic++;
         }
 
-        if (!$this->OutOfBounds($bi[0], $bi[1], $RUBound, $CUBound)) {
-            $antinodes[] = implode(",", $bi);
+        $node = $b;
+        $harmonic = 1;
+
+        while (!$this->OutOfBounds($node[0], $node[1], $RUBound, $CUBound)) {
+            $antinodes[] = implode(",", $node);
+            $node = [($dbr * $harmonic) + $b[0], ($dbc * $harmonic) + $b[1]];
+            $harmonic++;
         }
 
         return $antinodes;
