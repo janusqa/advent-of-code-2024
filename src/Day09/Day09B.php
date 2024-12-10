@@ -2,7 +2,7 @@
 
 namespace Janusqa\Adventofcode\Day09;
 
-class Day09A
+class Day09B
 {
 
     public function run(string $input): void
@@ -25,6 +25,23 @@ class Day09A
             }
         }
 
+
+        for ($i = count($files) - 1; $i >= 0; $i--) {
+            for ($j = 0; $j < count($spaces); $j++) {
+                if ($spaces[$j][0] > $files[$i][0][0]) {
+                    break;
+                }
+                if ($spaces[$j][1] >= $files[$i][0][1]) {
+                    $old_file_start = $files[$i][0][0];
+                    $files[$i][0][0] = $spaces[$j][0];
+                    $spaces[$j][0] = $files[$i][0][0] + $files[$i][0][1];
+                    $spaces[$j][1] = $spaces[$j][1] - $files[$i][0][1];
+                    $spaces[] = [$old_file_start, $files[$i][0][1]];
+                    break;
+                }
+            }
+        }
+
         $blocks = [];
 
         foreach ($files as $id => $file) {
@@ -41,31 +58,11 @@ class Day09A
 
         ksort($blocks);
 
-        $p_start = 0;
-        $p_end = count($blocks) - 1;
-
-        while ($p_start < $p_end) {
-            if (isset($blocks[$p_start])) {
-                $p_start++;
-            }
-
-            if (!isset($blocks[$p_end])) {
-                $p_end--;
-            }
-
-            if (!isset($blocks[$p_start]) && isset($blocks[$p_end])) {
-                $blocks[$p_start] = $blocks[$p_end];
-                $blocks[$p_end] = null;
-            }
-        }
-
         $checksum = 0;
 
         foreach ($blocks as $pos => $block) {
             if (isset($block)) {
                 $checksum += $pos * $block;
-            } else {
-                break;
             }
         }
 
