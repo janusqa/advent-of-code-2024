@@ -11,7 +11,7 @@ class Day11A
 
         $stones = array_map(fn($n) => (int)$n, explode(" ", $input));
 
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 25; $i++) {
             $stones = $this->blink($stones);
         }
 
