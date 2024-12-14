@@ -2,9 +2,8 @@
 
 namespace Janusqa\Adventofcode\Day13;
 
-class Day13A
+class Day13B
 {
-
     public function run(string $input): void
     {
 
@@ -23,6 +22,7 @@ class Day13A
             $games[] = [$a[1] => [(int)$a[2], (int)$a[3]], $b[1] => [(int)$b[2], (int)$b[3]], $p[1] => [(int)$p[2], (int)$p[3]]];
         }
 
+
         $total_tokens = 0;
 
         foreach ($games as $game) {
@@ -33,7 +33,7 @@ class Day13A
         echo $total_tokens . PHP_EOL;
     }
 
-    private function play(array $game): array
+    private function play(array $game, int $prize_increase = 10000000000000): array
     {
         /**
          * https://en.wikipedia.org/wiki/Cramer%27s_rule
@@ -42,14 +42,15 @@ class Day13A
 
         $a1 = $game['A'][0];
         $b1 = $game['B'][0];
-        $c1 = $game['Prize'][0];
+        $c1 = $game['Prize'][0] + $prize_increase;
         $a2 = $game['A'][1];
         $b2 = $game['B'][1];
-        $c2 = $game['Prize'][1];
+        $c2 = $game['Prize'][1] + $prize_increase;
 
         $x = (($c1 * $b2) - ($b1 * $c2)) / (($a1 * $b2) - ($b1 * $a2));
         $y = (($a1 * $c2) - ($c1 * $a2)) / (($a1 * $b2) - ($b1 * $a2));
 
-        return (($x * $a1 + $y * $b1 === $c1) && ($x * $a2 + $y * $b2 === $c2) && 0 < $x && $x < 101 && 0 < $y && $y < 101) ? [$x, $y] : [0, 0];
+        // return (($x * $a1 + $y * $b1 === $c1) && ($x * $a2 + $y * $b2 === $c2) && 0 < $x && $x < 101 && 0 < $y && $y < 101) ? [$x, $y] : [0, 0];
+        return (($x * $a1 + $y * $b1 === $c1) && ($x * $a2 + $y * $b2 === $c2) && 0 < $x && 0 < $y) ? [$x, $y] : [0, 0];
     }
 }
