@@ -77,7 +77,7 @@ class Day14B
     //     return ($r_start <= $row && $row <= $r_end && $c_start <= $col && $col <= $c_end);
     // }
 
-    private function printGrid(array $grid, int $rows, int $cols, $seconds = 0): void
+    private function printGrid(array $grid, int $rows, int $cols, int $seconds = 0): void
     {
         file_put_contents($this->file, "Seconds: $seconds" . PHP_EOL, FILE_APPEND);
         // echo "Seconds: $seconds" .PHP_EOL;
