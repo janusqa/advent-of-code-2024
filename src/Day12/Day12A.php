@@ -35,6 +35,7 @@ class Day12A
         echo $price . PHP_EOL;
     }
 
+    // BFS 
     private function survey(array $grid, array $directions, int $RUBOUND, int $CUBOUND, array &$visited, int $ridx, int $cidx, string $plant): array
     {
         if (isset($visited["$ridx,$cidx"])) {
