@@ -4,12 +4,9 @@ namespace Janusqa\Adventofcode\Day15;
 
 class Day15B
 {
-    private $file = "output.txt";
-
     public function run(string $input): void
     {
         $lines = explode("\n\n", trim($input));
-
 
         $rows = explode("\n", $lines[0]);
         $RUBOUND = count($rows) - 1;
@@ -43,15 +40,27 @@ class Day15B
         // print_r($robot);
 
         // $this->printGrid($grid, count($grid), count($grid[0]), "");
-        foreach ($instructions as $instruction) {
+        // print_r(implode("", $instructions) . PHP_EOL);
+        $undo = new \SplStack();
+        foreach ($instructions as $index => $instruction) {
             $next_r = $robot[0] + $directions[$instruction][0];
             $next_c = $robot[1] + $directions[$instruction][1];
-            if ($this->canMove($grid, $directions, $instruction, [$next_r, $next_c])) {
+            if ($this->canMove($grid, $directions, $undo, $instruction, [$next_r, $next_c])) {
                 $grid[$next_r][$next_c] = $grid[$robot[0]][$robot[1]];
                 $grid[$robot[0]][$robot[1]] = '.';
                 $robot = [$next_r, $next_c];
+                while (!$undo->isEmpty()) {
+                    $undo->pop();
+                }
+            } else {
+                while (!$undo->isEmpty()) {
+                    [$r, $c, $v] = $undo->pop();
+                    $grid[$r][$c] = $v;
+                }
             }
-            $this->printGrid($grid, count($grid), count($grid[0]), $instruction);
+            // $fileIndex = floor($index / 1000) + 1; // Create new file every 1000 steps
+            // $filename = "output_$fileIndex.txt"; // Use $fileIndex to differentiate files        
+            // $this->printGrid($grid, count($grid), count($grid[0]), $instruction, $index);
         }
         // $this->printGrid($grid, count($grid), count($grid[0]), $instruction);
 
@@ -67,7 +76,7 @@ class Day15B
         echo $total . PHP_EOL;
     }
 
-    private function canMove(array &$grid, array $directions, string $instruction, array $location): bool
+    private function canMove(array &$grid, array $directions, \SplStack $undo, string $instruction, array $location): bool
     {
         $isVertical = $instruction === '^' || $instruction === 'v';
 
@@ -85,12 +94,19 @@ class Day15B
             $next_c2 = ($grid[$location[0]][$location[1]] === ']' ? $location[1] - 1 : $location[1] + 1) + $directions[$instruction][1];
         }
 
-        if ($this->canMove($grid, $directions, $instruction, [$next_r1, $next_c1]) && ($isVertical ? $this->canMove($grid, $directions, $instruction, [$next_r2, $next_c2]) : true)) {
+        if ($this->canMove($grid, $directions, $undo, $instruction, [$next_r1, $next_c1]) && ($isVertical ? $this->canMove($grid, $directions, $undo, $instruction, [$next_r2, $next_c2]) : true)) {
             if ($isVertical) {
                 $c2 = ($grid[$location[0]][$location[1]] === ']' ? $location[1] - 1 : $location[1] + 1);
+
+                $undo->push([$next_r2, $next_c2, $grid[$next_r2][$next_c2]]);
+                $undo->push([$location[0], $c2, $grid[$location[0]][$c2]]);
+
                 $grid[$next_r2][$next_c2] = $grid[$location[0]][$c2];
                 $grid[$location[0]][$c2] = '.';
             }
+            $undo->push([$next_r1, $next_c1, $grid[$next_r1][$next_c1]]);
+            $undo->push([$location[0], $location[1], $grid[$location[0]][$location[1]]]);
+
             $grid[$next_r1][$next_c1] = $grid[$location[0]][$location[1]];
             $grid[$location[0]][$location[1]] = '.';
             // $this->printGrid($grid, count($grid), count($grid[0]), $instruction);
@@ -126,9 +142,9 @@ class Day15B
         return $new_grid;
     }
 
-    private function printGrid(array $grid, int $rows, int $cols, string $instruction = "", string $file = ""): void
+    private function printGrid(array $grid, int $rows, int $cols, string $instruction = "", int $index = 0, string $file = ""): void
     {
-        $output = "Move: $instruction" . PHP_EOL;
+        $output = "Move #$index: $instruction" . PHP_EOL;
 
         for ($r = 0; $r < $rows; $r++) {
             for ($c = 0; $c < $cols; $c++) {
