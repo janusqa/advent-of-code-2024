@@ -2,7 +2,7 @@
 
 namespace Janusqa\Adventofcode\Day18;
 
-class Day18A
+class Day18B
 {
 
     public function run(string $input): void
@@ -24,17 +24,9 @@ class Day18A
 
         $grid = [];
 
-        for ($i = 0; $i < $BYTES_DROPED; $i++) {
-            [$x, $y] = $bytes[$i];
+        $steps = $this->Binarysearch($grid, $RUBOUND, $CUBOUND, $bytes, $start, $end);
 
-            if (!$this->OutOfBounds($y, $x, $RUBOUND, $CUBOUND)) {
-                $grid[$y][$x] = '#';
-            }
-        }
-
-        $steps = $this->bfs($grid, $RUBOUND, $CUBOUND, $start, $end);
-
-        echo $steps . PHP_EOL;
+        echo implode(",", $steps) . PHP_EOL;
     }
 
     // BFS 
@@ -61,7 +53,6 @@ class Day18A
 
             $visited[$vkey] = true;
 
-
             if ($r === $end[0] && $c === $end[1]) {
                 $best = min($d, $best);
             }
@@ -78,6 +69,55 @@ class Day18A
         }
 
         return $best === PHP_INT_MAX ? -1 : $best;
+    }
+
+    # Binary Search
+    private function Binarysearch(array $grid, int $RUBOUND, int $CUBOUND, array $bytes, array $start, array $end): array
+    {
+        $low = 1024; // Confirmad from Part 1 that 0-1024 bytes created no blockages.
+        $high = count($bytes) - 1;
+
+        // Binary search to find the point where the path is blocked
+        while ($low <= $high) {
+            $mid = (int)(($low + $high) / 2);
+
+            // Place walls up to $mid index
+            $this->SeedGrid($grid, $bytes, $mid);
+
+            // Check if the path is blocked
+            $steps = $this->bfs($grid, $RUBOUND, $CUBOUND, $start, $end);
+
+            if ($steps === -1) { // Path is blocked
+                $high = $mid - 1;   // Search in the left half
+            } else {
+                $low = $mid + 1; // Search in the right half
+            }
+        }
+
+        if ($steps !== -1) {
+            // Search right for the first block. We should be close.
+            while ($mid < count($bytes) && $this->bfs($grid, $RUBOUND, $CUBOUND, $start, $end) !== -1) {
+                $mid++;
+                $this->SeedGrid($grid, $bytes, $mid);
+            }
+        } else {
+            // Search left for the first block. We should be close.
+            while ($mid > 0 && $this->bfs($grid, $RUBOUND, $CUBOUND, $start, $end) === -1) {
+                $mid--;
+                $this->SeedGrid($grid, $bytes, $mid);
+            }
+        }
+
+        return $bytes[$mid];
+    }
+
+    private function SeedGrid(array &$grid, array $bytes, int $to): void
+    {
+        $grid = [];
+        for ($i = 0; $i <= $to; $i++) {
+            [$x, $y] = $bytes[$i];
+            $grid[$y][$x] = '#';
+        }
     }
 
     private function OutOfBounds(int $row, int $col, int $RUBound, int $CUBound): bool
