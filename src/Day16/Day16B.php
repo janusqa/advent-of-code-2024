@@ -37,24 +37,29 @@ class Day16B
         $backtrack = [];
         $goals = [];
 
-        $movements->insert(['data' => [$start[0], $start[1], 'E'], 'priority' => 0], 0);
+        $movements->insert(['data' => ['current' => [$start[0], $start[1], 'E'], 'parent' => null], 'priority' => 0], 0);
 
         while (!$movements->isEmpty()) {
 
             $step = $movements->extract();
 
-            [$r, $c, $d] = $step['data'];
+            [$r, $c, $d] = $step['data']['current'];
             $priority = $step['priority'];
 
-            $vkey = implode(",", $step['data']);
+            $vkey = implode(",", $step['data']['current']);
+            $pkey = isset($step['data']['parent']) ? implode(",", $step['data']['parent']) : null;
 
             if ($priority > ($visited[$vkey] ?? PHP_INT_MAX)) continue;
+
+            $visited[$vkey] = $priority;
 
             if ($r === $end[0] && $c === $end[1]) {
                 if ($priority > $best_priority) break;
                 $best_priority = $priority;
                 $goals[$vkey] = true; // goal added multiple times as it can be approached form different directions
             }
+
+            if (isset($pkey)) $backtrack[$vkey][$pkey] = true;
 
             foreach ($directions as $next_d => $direction) {
 
@@ -71,16 +76,9 @@ class Day16B
                 $p = $priority + 1 + ($d === $next_d ? 0 : 1000);
                 $next_priority = $p < PHP_INT_MAX ? $p : PHP_INT_MAX;
 
-                $best_next_priority = $visited[$next_vkey] ?? PHP_INT_MAX;
-                if ($next_priority > $best_next_priority) continue;
-                if ($next_priority < $best_next_priority) {
-                    $backtrack[$next_vkey] = [];
-                    $visited[$next_vkey] = $next_priority;
-                }
+                if ($next_priority > ($visited[$next_vkey] ?? PHP_INT_MAX)) continue;
 
-                $backtrack[$next_vkey][$vkey] = true;
-
-                $movements->insert(['data' => [$next_r, $next_c, $next_d], 'priority' => $next_priority], -$next_priority);
+                $movements->insert(['data' => ['current' => [$next_r, $next_c, $next_d], 'parent' => [$r, $c, $d]], 'priority' => $next_priority], -$next_priority);
             }
         }
 
@@ -108,12 +106,12 @@ class Day16B
 
         while (!$queue->isEmpty()) {
 
-            $goal = $queue->dequeue();
+            $tile = $queue->dequeue();
 
-            foreach (array_keys($backtrack[$goal] ?? []) as $tile) {
-                if (isset($visited[$tile])) continue;
-                $visited[$tile] = true;
-                $queue->enqueue($tile);
+            foreach (array_keys($backtrack[$tile] ?? []) as $parent) {
+                if (isset($visited[$parent])) continue;
+                $visited[$parent] = true;
+                $queue->enqueue($parent);
             }
         }
 
