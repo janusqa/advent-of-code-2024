@@ -21,9 +21,9 @@ class Day16A
             $grid[] = str_split($row);
         }
 
-        $result = $this->dijkstra($grid, $start, $end);
+        $score = $this->dijkstra($grid, $start, $end);
 
-        echo $result . PHP_EOL;
+        echo $score . PHP_EOL;
     }
 
     // Dijkstra's Algorithm
@@ -38,9 +38,11 @@ class Day16A
 
         while (!$movements->isEmpty()) {
             $step = $movements->extract();
+
             [$r, $c, $d] = $step['data'];
-            $vkey = serialize($step['data']);
             $priority = $step['priority'];
+
+            $vkey = implode(",", $step['data']);
 
             if (isset($visited[$vkey]))  continue;
 
@@ -48,12 +50,17 @@ class Day16A
 
             if ($r === $end[0] && $c === $end[1]) return $priority;
 
+
             foreach ($directions as $next_d => $direction) {
+
+                // prevent moving backwards
+                if (isset($directions[$d]) && ($directions[$d][0] + $direction[0] === 0 && $directions[$d][1] + $direction[1] === 0)) continue;
+
                 $next_r = $r + $direction[0];
                 $next_c = $c + $direction[1];
 
-                if ($grid[$next_r][$next_c] === "#") continue; // prevent hitting a wall
-                if (isset($directions[$d]) && ($directions[$d][0] + $direction[0] === 0 && $directions[$d][1] + $direction[1] === 0)) continue; // prevent moving backwards
+                // prevent hitting a wall
+                if ($grid[$next_r][$next_c] === "#") continue;
 
                 $p = $priority + 1 + ($d === $next_d ? 0 : 1000);
                 $next_priority = $p < PHP_INT_MAX ? $p : PHP_INT_MAX;
