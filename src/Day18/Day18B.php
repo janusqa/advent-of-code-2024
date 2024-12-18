@@ -17,7 +17,6 @@ class Day18B
 
         $RUBOUND = 70;
         $CUBOUND = 70;
-        $BYTES_DROPED = 1024;
 
         $start = [0, 0];
         $end = [$RUBOUND, $CUBOUND];
