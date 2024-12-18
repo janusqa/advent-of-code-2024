@@ -24,9 +24,9 @@ class Day18B
 
         $grid = [];
 
-        $steps = $this->Binarysearch($grid, $RUBOUND, $CUBOUND, $bytes, $start, $end);
+        $blockage = $this->Binarysearch($grid, $RUBOUND, $CUBOUND, $bytes, $start, $end);
 
-        echo implode(",", $steps) . PHP_EOL;
+        echo implode(",", $blockage) . PHP_EOL;
     }
 
     // BFS 
