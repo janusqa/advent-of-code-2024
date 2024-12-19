@@ -2,7 +2,7 @@
 
 namespace Janusqa\Adventofcode\Day17;
 
-class Day17A
+class Day17B
 {
 
     private $ip = 0;
@@ -31,13 +31,52 @@ class Day17A
         preg_match($pattern_program, $p, $matches);
         $this->program = array_map(fn($n) => (int)$n, explode(',', $matches[1]));
 
-        $this->execute($this->program);
+        $candidates = [];
 
-        echo implode(",", $this->output) . PHP_EOL;
+        for ($i = 1; $i < 1025; $i++) {
+            $this->ip = 0;
+            $this->registers['A'] = $i;
+            $this->registers['B'] = 0;
+            $this->registers['C'] = 0;
+            $this->output = [];
+            $this->execute($this->program);
+            if ($this->output[0] === $this->program[0]) $candidates[] = $i;
+        }
+
+        for ($i = 1; $i < count($this->program); $i++) {
+            $new_candidates = [];
+            foreach ($candidates as $candidate) {
+                for ($bit = 0; $bit < 8; $bit++) {
+                    $possible_candidate = ($bit << (7 + 3 * $i)) | $candidate;
+                    $this->ip = 0;
+                    $this->registers['A'] = $possible_candidate;
+                    $this->registers['B'] = 0;
+                    $this->registers['C'] = 0;
+                    $this->output = [];
+                    $this->execute($this->program);
+                    if (count($this->output) > $i && $this->output[$i] === $this->program[$i]) $new_candidates[] = $possible_candidate;
+                }
+            }
+            $candidates = $new_candidates;
+        }
+
+        echo min($candidates) . PHP_EOL;
     }
 
     private function execute(array $program): void
     {
+        /**
+         * Disassembly of program
+         * 2,4 -> B = A % 8
+         * 1,2 -> B = B ^ 2
+         * 7,5 -> C = A / (2 ** B) = A / (1 << B) = A >> B
+         * 4,5 -> B = B ^ C
+         * 1,3 -> B = B ^ 3
+         * 5,5 -> print B % 8
+         * 0,3 -> A = A / (2 ** 3) = A / (1 << 3) = A >> 3
+         * 3,0 -> if A!== 0 goto 0 else halt!
+         */
+
         while (($this->ip + 1) < count($program)) {
             $this->process($program[$this->ip], $program[$this->ip + 1]);
         }
