@@ -106,10 +106,10 @@ class Day20A
             }
         }
 
-        return ['path' => $this->bfs($backtrack, $goals, $best_priority), 'cheats' => $cheats];
+        return ['path' => $this->bfs($backtrack, $goals, $best_priority), 'cheats' => $cheats, 'best' => $best_priority];
     }
 
-    private function bfs(array $backtrack, array $goals, $best): array
+    private function bfs(array $backtrack, array $goals): array
     {
         $queue = new \SplQueue();
 

@@ -23,33 +23,18 @@ class Day20B
         }
 
         $data = $this->dijkstra($grid, $start, $end, 1);
-
-        // print_r($data['path']);
-        // print_r($data['cheats']);
+        $path = array_reverse($data['path']);
 
         $cheats = [];
 
-        foreach ($data['cheats'] as $cheat) {
-            [$cheat_r, $cheat_c, $r, $c] = $cheat;
-            $time_saved = $data['path']["$cheat_r,$cheat_c"] - $data['path']["$r,$c"] - 2;
-            // print_r("$r,$c -> $cheat_r,$cheat_c" . PHP_EOL);
-            // print_r($data['path']["$cheat_r,$cheat_c"] . ' - ' . $data['path']["$r,$c"] . ' = ' . $time_saved . PHP_EOL);
-            if (isset($data['path']["$cheat_r,$cheat_c"]) && $time_saved > 0) {
-                $cheats[$time_saved] = ($cheats[$time_saved] ?? 0) + 1;
+        foreach (array_slice($path, 0, count($path) - 1) as $idx => $ipath) {
+            foreach (array_slice($path, 1) as $jdx => $jpath) {
+                $d = $this->manhattan(explode(",", $idx), explode(",", $jdx));
+                if ($d <= 20 && $jpath - $ipath > $d) {
+                    $cheats[$jpath - $ipath - $d] =  ($cheats[$jpath - $ipath - $d] ?? 0) + 1;
+                }
             }
         }
-
-        print_r($cheats);
-
-
-        // $times  = array_reduce(
-        //     $this->dijkstra($grid, $start, $end),
-        //     function ($carry, $n) use ($bestime_without_cheats) {
-        //         $carry[$bestime_without_cheats - $n] = ($carry[$bestime_without_cheats - $n] ?? 0) + 1; // Map key to value
-        //         return $carry;
-        //     },
-        //     []
-        // );
 
         $result = array_sum(array_filter($cheats, function ($key) {
             return $key >= 100;
@@ -69,7 +54,6 @@ class Day20B
         $visited = [];
         $backtrack = [];
         $goals = [];
-        $cheats = [];
 
         $movements->insert(['data' => ['current' => [$start[0], $start[1]], 'parent' => null], 'priority' => 0], 0);
 
@@ -103,17 +87,6 @@ class Day20B
                 $next_c = $c + $direction[1];
                 $next_vkey = "$next_r,$next_c";
 
-
-                if (!$this->OutOfBounds($next_r, $next_c, count($grid) - 2, count($grid[0]) - 2, 1, 1) && $grid[$next_r][$next_c] === "#") {
-                    foreach ($directions as $cheat_direction) {
-                        $cheat_r = $next_r + $cheat_direction[0];
-                        $cheat_c = $next_c + $cheat_direction[1];
-                        if ($grid[$cheat_r][$cheat_c] !== '#') {
-                            $cheats[] = [$cheat_r, $cheat_c, $r, $c];
-                        }
-                    }
-                }
-
                 // prevent hitting a wall
                 if ($grid[$next_r][$next_c] === "#") continue;
 
@@ -125,10 +98,10 @@ class Day20B
             }
         }
 
-        return ['path' => $this->bfs($backtrack, $goals, $best_priority), 'cheats' => $cheats];
+        return ['path' => $this->bfs($backtrack, $goals, $best_priority), 'best' => $best_priority];
     }
 
-    private function bfs(array $backtrack, array $goals, $best): array
+    private function bfs(array $backtrack, array $goals): array
     {
         $queue = new \SplQueue();
 
@@ -148,6 +121,11 @@ class Day20B
         }
 
         return $visited;
+    }
+
+    private function manhattan(array $orig, array $dest): int
+    {
+        return abs($orig[0] - $dest[0]) + abs($orig[1] - $dest[1]);
     }
 
     private function OutOfBounds(int $row, int $col, int $RUBound, int $CUBound, int $RLBound = 0, int $CLBound = 0): bool
