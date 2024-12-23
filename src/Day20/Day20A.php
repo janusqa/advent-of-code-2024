@@ -38,7 +38,6 @@ class Day20A
             return $key >= 100;
         }, ARRAY_FILTER_USE_KEY));
 
-
         echo $result . PHP_EOL;
     }
 
