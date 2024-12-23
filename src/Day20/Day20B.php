@@ -2,7 +2,7 @@
 
 namespace Janusqa\Adventofcode\Day20;
 
-class Day20A
+class Day20B
 {
     public function run(string $input): void
     {
@@ -24,15 +24,32 @@ class Day20A
 
         $data = $this->dijkstra($grid, $start, $end, 1);
 
+        // print_r($data['path']);
+        // print_r($data['cheats']);
+
         $cheats = [];
 
         foreach ($data['cheats'] as $cheat) {
             [$cheat_r, $cheat_c, $r, $c] = $cheat;
             $time_saved = $data['path']["$cheat_r,$cheat_c"] - $data['path']["$r,$c"] - 2;
+            // print_r("$r,$c -> $cheat_r,$cheat_c" . PHP_EOL);
+            // print_r($data['path']["$cheat_r,$cheat_c"] . ' - ' . $data['path']["$r,$c"] . ' = ' . $time_saved . PHP_EOL);
             if (isset($data['path']["$cheat_r,$cheat_c"]) && $time_saved > 0) {
                 $cheats[$time_saved] = ($cheats[$time_saved] ?? 0) + 1;
             }
         }
+
+        print_r($cheats);
+
+
+        // $times  = array_reduce(
+        //     $this->dijkstra($grid, $start, $end),
+        //     function ($carry, $n) use ($bestime_without_cheats) {
+        //         $carry[$bestime_without_cheats - $n] = ($carry[$bestime_without_cheats - $n] ?? 0) + 1; // Map key to value
+        //         return $carry;
+        //     },
+        //     []
+        // );
 
         $result = array_sum(array_filter($cheats, function ($key) {
             return $key >= 100;
