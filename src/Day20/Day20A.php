@@ -22,7 +22,7 @@ class Day20A
             $grid[] = str_split($row);
         }
 
-        $data = $this->dijkstra($grid, $start, $end, 1);
+        $data = $this->dijkstra($grid, $start, $end);
 
         $cheats = [];
 
@@ -43,7 +43,7 @@ class Day20A
     }
 
     // Dijkstra's Algorithm
-    private function dijkstra(array $grid, array $start, array $end, int $cheated = 0): array
+    private function dijkstra(array $grid, array $start, array $end): array
     {
         $directions = ['U' => [-1, 0], 'R' => [0, 1], 'D' => [1, 0], 'L' => [0, -1]];
 
@@ -85,7 +85,6 @@ class Day20A
                 $next_r = $r + $direction[0];
                 $next_c = $c + $direction[1];
                 $next_vkey = "$next_r,$next_c";
-
 
                 if (!$this->OutOfBounds($next_r, $next_c, count($grid) - 2, count($grid[0]) - 2, 1, 1) && $grid[$next_r][$next_c] === "#") {
                     foreach ($directions as $cheat_direction) {
