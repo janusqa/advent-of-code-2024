@@ -27,11 +27,16 @@ class Day20B
 
         $cheats = [];
 
-        foreach (array_slice($path, 0, count($path) - 1) as $idx => $ipath) {
-            foreach (array_slice($path, 1) as $jdx => $jpath) {
-                $d = $this->manhattan(explode(",", $idx), explode(",", $jdx));
+        $steps = array_keys($path);
+        for ($i = 0; $i < count($steps) - 1; $i++) {
+            for ($j = $i + 1; $j < count($steps); $j++) {
+                $ipath = $path[$steps[$i]];
+                $jpath = $path[$steps[$j]];
+
+                $d = $this->manhattan(explode(",", $steps[$i]), explode(",", $steps[$j]));
+
                 if ($d <= 20 && $jpath - $ipath > $d) {
-                    $cheats[$jpath - $ipath - $d] =  ($cheats[$jpath - $ipath - $d] ?? 0) + 1;
+                    $cheats[$jpath - $ipath - $d] = ($cheats[$jpath - $ipath - $d] ?? 0) + 1;
                 }
             }
         }
