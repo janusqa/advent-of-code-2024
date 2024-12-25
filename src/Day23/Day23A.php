@@ -8,22 +8,41 @@ class Day23A
     {
         $lines = explode("\n", trim($input));
 
-        $connections = array_map(fn($n) => explode('-', $n), $lines);
+        $edges = array_map(fn($n) => explode('-', $n), $lines);
 
-        for ($i = 0; $i < count($connections) - 1; $i++) {
-            for ($j = $i + 1; $j < count($connections); $j++) {
-                if () {
-                    
-                }
+        $graph = [];
 
-                $d = $this->manhattan(explode(",", $steps[$i]), explode(",", $steps[$j]));
+        foreach ($edges as $edge) {
+            $graph[$edge[0]][$edge[1]] = $edge[1];
+            $graph[$edge[1]][$edge[0]] = $edge[0];
+        }
 
-                if ($d <= 20 && $jpath - $ipath > $d) {
-                    $cheats[$jpath - $ipath - $d] = ($cheats[$jpath - $ipath - $d] ?? 0) + 1;
+        $groups = [];
+        foreach ($graph as $n0 => $node) {
+            foreach (array_slice($node, 0, count($node) - 1) as $n1) {
+                foreach (array_slice($node, 1, count($node) - 1) as $n2) {
+                    if (isset($graph[$n1][$n2]) || isset($graph[$n2][$n1])) {
+                        $group = [$n0, $n1, $n2];
+                        sort($group);
+                        $gkey = implode(',', $group);
+                        if (!isset($groups[$gkey])) {
+                            $groups[$gkey] = $group;
+                        }
+                    }
                 }
             }
         }
 
-        echo "" . PHP_EOL;
+        $sets = 0;
+        foreach ($groups as $group) {
+            foreach ($group as $node) {
+                if (strpos($node, 't') === 0) {
+                    $sets++;
+                    break;
+                }
+            }
+        }
+
+        echo $sets . PHP_EOL;
     }
 }
