@@ -10,12 +10,13 @@ class Day25A
 
         $s = explode("\n", $schematics[0]);
         $HEIGHT = count($s);
+        $WIDTH = strlen($s[0]);
 
         $keys = [];
         $locks = [];
 
         foreach ($schematics as $schematic) {
-            $is_lock = strpos($schematic, "#") === 0;
+            $is_lock = strpos(substr($schematic, 0, 5), '.') === false;
             $pin = [];
             foreach (explode("\n", $schematic) as $row) {
                 foreach (str_split($row) as $idx => $col) {
@@ -36,8 +37,6 @@ class Day25A
         $pairs = 0;
         foreach ($locks as $lock) {
             foreach ($keys as $key) {
-                print_r(implode(",", $lock) . PHP_EOL);
-                print_r(implode(",", $key) . PHP_EOL . PHP_EOL);
                 $is_match = true;
                 foreach ($key as $idx => $pin) {
                     if ($pin + $lock[$idx] > $HEIGHT) {
