@@ -18,11 +18,14 @@ class Day23A
         }
 
         $groups = [];
-        foreach ($graph as $n0 => $node) {
-            foreach (array_slice($node, 0, count($node) - 1) as $n1) {
-                foreach (array_slice($node, 1, count($node) - 1) as $n2) {
-                    if (isset($graph[$n1][$n2]) || isset($graph[$n2][$n1])) {
-                        $group = [$n0, $n1, $n2];
+        foreach ($graph as $node => $neighbours) {
+            $adj_list = array_keys($neighbours);
+            for ($i = 0; $i < count($adj_list) - 1; $i++) {
+                $n1 = $adj_list[$i];
+                for ($j = $i + 1; $j < count($adj_list); $j++) {
+                    $n2 = $adj_list[$j];
+                    if (isset($graph[$n1][$n2])) {
+                        $group = [$node, $n1, $n2];
                         sort($group);
                         $gkey = implode(',', $group);
                         if (!isset($groups[$gkey])) {
