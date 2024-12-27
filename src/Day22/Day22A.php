@@ -8,31 +8,24 @@ class Day22A
     {
         $lines = explode("\n", trim($input));
 
-
         $secrets = array_map(fn($n) => (int)$n, $lines);
 
-        for ($i = 0; $i < 2000; $i++) {
-            foreach ($secrets as $idx => $secret) {
-                $secrets[$idx] = $this->next($secrets[$idx]);
+        $result = 0;
+        foreach ($secrets as $secret) {
+            for ($i = 0; $i < 2000; $i++) {
+                $secret = $this->next($secret);
             }
+            $result += $secret;
         }
 
-        print_r($secrets);
-
-        echo array_sum($secrets) . PHP_EOL;
+        echo $result . PHP_EOL;
     }
 
     private function next(int $secret): int
     {
-        $result = $secret * 64;
-        $secret ^= $result;
-        $secret = $secret % 16777216;
-        $result = floor($secret / 32);
-        $secret ^= $result;
-        $secret = $secret % 16777216;
-        $result = $secret * 2048;
-        $secret ^= $result;
-        $secret = $secret % 16777216;
+        $secret ^= ($secret * 64) % 16777216;
+        $secret ^= floor($secret  / 32) % 16777216;
+        $secret ^= ($secret * 2048) % 16777216;
 
         return $secret;
     }
