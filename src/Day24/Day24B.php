@@ -35,10 +35,12 @@ class Day24B
             $y = substr($gate[2], 0, 1);
             $z = substr($gate[3], 0, 1);
 
+            // If the output of a gate is z, then the operation has to be XOR unless it is the last bit.
             if ($z === 'z' && $gate[1] !== 'XOR' && $gate[3] !== array_key_first($wires_z)) {
                 $gates_output[$idx] = $gate;
             }
 
+            // If the output of a gate is not z and the inputs are not x, y then it has to be AND / OR, but not XOR
             if (
                 $z !== 'z' &&
                 $x !== 'x' &&
@@ -51,6 +53,8 @@ class Day24B
             }
         }
 
+        // Find the gates in $gates_outputs whose outputs have to be swapped with the outputs
+        // in $gates_intermediary
         foreach ($gates_intermediary as $igate) {
             $queue = new \SplQueue();
             $queue->enqueue($igate);
@@ -85,6 +89,7 @@ class Day24B
         $wires_y = $this->getWires('y', $wires);
         $wires_z = $this->getWires('z', $wires);
 
+        // Find final two gates. The number of trailing 0's on the error will let us know which gates to swap
         $bad_sum = implode('', array_map(fn($n) => $this->adder($n, $gates, $wires), array_keys($wires_z)));
         $error_dec = ((bindec(implode('', $wires_x)) + bindec(implode('', $wires_y))) ^ bindec($bad_sum));
         $error_bin = decbin($error_dec);
