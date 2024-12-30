@@ -20,28 +20,32 @@ class Day24A
         $gates = [];
         foreach (explode("\n", $g) as $gate) {
             preg_match($pattern_gates, $gate, $matches);
-            $gates[] = [$matches[1], $matches[2], $matches[3], $matches[4]];
+            $gates[$matches[4]] = [$matches[1], $matches[2], $matches[3], $matches[4]];
+            $wires[$matches[1]] = $wires[$matches[1]] ?? null;
+            $wires[$matches[3]] = $wires[$matches[3]] ?? null;
+            $wires[$matches[4]] = $wires[$matches[4]] ?? null;
         }
 
-        while (count($gates) > 0) {
-            $gates_copy  = $gates;
-            foreach ($gates as $idx => $gate) {
-                if (isset($wires[$gate[0]]) && isset($wires[$gate[2]])) {
-                    $wires[$gate[3]] = $this->gate($wires[$gate[0]], $wires[$gate[2]], $gate[1]);
-                    $gates_copy = [...array_slice($gates, 0, $idx), ...array_slice($gates, $idx + 1)];
-                }
-            }
-            $gates = $gates_copy;
-        }
+        $wires_z = $this->getWires('z', $wires);
 
-        ksort($wires);
-        $digits_bin = array_filter($wires, function ($key) {
-            return strpos($key, 'z') === 0;
-        }, ARRAY_FILTER_USE_KEY);
+        $result_bin = implode('', array_map(fn($n) => $this->adder($n, $gates, $wires), array_keys($wires_z)));
+        $result_dec = bindec($result_bin);
 
-        $decimal = bindec(implode('', array_reverse($digits_bin)));
+        echo $result_dec . " ($result_bin)" . PHP_EOL;
+    }
 
-        echo $decimal . PHP_EOL;
+    private function adder(string $wire, array &$gates, array &$wires): int
+    {
+        if (isset($wires[$wire])) return $wires[$wire];
+
+        [$a, $op, $b] = $gates[$wire];
+
+        $sa = $this->adder($a, $gates, $wires);
+        $sb = $this->adder($b, $gates, $wires);
+
+        $wires[$wire] = $this->gate($sa, $sb, $op);
+
+        return $wires[$wire];
     }
 
     private function gate(int $a, int $b, string $operator): int
@@ -57,5 +61,16 @@ class Day24A
         } else {
             throw new \InvalidArgumentException("Invalid operator: $operator.");
         }
+    }
+
+    private function getWires(string $wire, array $wires)
+    {
+        $w = array_filter($wires, fn($n, $k) => strpos($k, $wire) === 0, ARRAY_FILTER_USE_BOTH);
+
+        uksort($w, function ($a, $b) {
+            return (int) substr($b, 1) <=> (int) substr($a, 1); // Sort descending by numeric suffix
+        });
+
+        return $w;
     }
 }

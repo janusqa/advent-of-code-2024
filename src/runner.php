@@ -7,7 +7,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $day = isset($argv[1]) ? str_pad((int)$argv[1], 2, '0', STR_PAD_LEFT) : null;
 $part = isset($argv[2]) ? strtolower($argv[2]) : null;
 
-if (!$day || !in_array($part, ['a', 'b'])) {
+if (!$day || !in_array($part, ['a', 'b', 'c'])) {
     echo "Usage: php run.php <day> <part>\n";
     echo "Example: php run.php 1 a\n";
     exit(1);

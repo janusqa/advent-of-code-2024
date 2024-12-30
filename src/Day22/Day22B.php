@@ -23,7 +23,6 @@ class Day22B
         $prices = array_map(fn($n) => array_map(fn($m) => $m['price'], $n), $secrets);
         $changes = array_map(fn($n) => array_map(fn($m) => $m['change'], $n), $secrets);
 
-
         $sequence_map = [];
 
         foreach ($changes as $idx => $buyer) {
