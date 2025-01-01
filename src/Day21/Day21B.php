@@ -32,12 +32,12 @@ class Day21B
             '>' => [1, 2],
         ];
 
-        $keypad_num_graph = $this->graph($keypad_num_pos, [3, 0]);
-        $keypad_dir_graph = $this->graph($keypad_dir_pos, [0, 0]);
+        $keypad_num_map = $this->graph($keypad_num_pos, [3, 0]);
+        $keypad_dir_map = $this->graph($keypad_dir_pos, [0, 0]);
 
         $result = 0;
         foreach ($lines as $line) {
-            $graphs = ['num' => $keypad_num_graph, 'dir' => $keypad_dir_graph];
+            $graphs = ['num' => $keypad_num_map, 'dir' => $keypad_dir_map];
             $seen = [];
             $result += intval(substr($line, 0, 3)) * $this->next($line, $graphs, 26, $seen, 'num');
         }
