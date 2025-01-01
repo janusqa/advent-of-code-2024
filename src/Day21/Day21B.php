@@ -2,7 +2,7 @@
 
 namespace Janusqa\Adventofcode\Day21;
 
-class Day21A
+class Day21B
 {
     public function run(string $input): void
     {
@@ -37,10 +37,9 @@ class Day21A
 
         $result = 0;
         foreach ($lines as $line) {
-            $keystrokes = $this->next($line, $keypad_num_graph);
-            $keystrokes = $this->next($keystrokes, $keypad_dir_graph);
-            $keystrokes = $this->next($keystrokes, $keypad_dir_graph);
-            $result += intval(substr($line, 0, 3)) * strlen($keystrokes);
+            $graphs = ['num' => $keypad_num_graph, 'dir' => $keypad_dir_graph];
+            $seen = [];
+            $result += intval(substr($line, 0, 3)) * $this->next($line, $graphs, 26, $seen, 'num');
         }
 
         echo $result . PHP_EOL;
@@ -65,16 +64,25 @@ class Day21A
         return $graph;
     }
 
-    private function next(string $keystrokes, array $graph): string
+    private function next(string $keystrokes, array &$graphs, int $depth, array &$seen, string $pad = 'dir'): int
     {
-        $next_keystrokes = '';
+        $key = "$keystrokes,$depth,$pad";
+
+        if (isset($seen[$key])) return $seen[$key];
+
+        if ($depth < 1) {
+            return strlen($keystrokes);
+        }
+
         $prev_keystroke = 'A';
 
+        $total = 0;
         foreach (str_split($keystrokes) as $keystroke) {
-            $next_keystrokes .= $graph["$prev_keystroke,$keystroke"];
+            $total += $this->next($graphs[$pad]["$prev_keystroke,$keystroke"], $graphs, $depth - 1, $seen);
             $prev_keystroke = $keystroke;
         }
 
-        return $next_keystrokes;
+        $seen[$key] = $total;
+        return $total;
     }
 }
